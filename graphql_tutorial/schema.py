@@ -1,9 +1,9 @@
 import graphene
 
 import links.schema
-from .users.schema import UserMutaion
+from .users.schema import UserQuery, UserMutaion
 
-class Query(links.schema.Query, graphene.ObjectType):
+class Query(UserQuery, links.schema.Query, graphene.ObjectType):
   pass
 
 class Mutation(UserMutaion, links.schema.Mutation, graphene.ObjectType):

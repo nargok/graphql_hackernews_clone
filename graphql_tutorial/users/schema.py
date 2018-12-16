@@ -7,6 +7,12 @@ class UserType(DjangoObjectType):
   class Meta:
     model = get_user_model()
 
+class UserQuery(graphene.ObjectType):
+  users = graphene.List(UserType)
+
+  def resolve_users(self, info):
+    return get_user_model().objects.all()
+
 class CreateUser(graphene.Mutation):
   user = graphene.Field(UserType)
 
