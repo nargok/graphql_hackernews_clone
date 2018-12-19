@@ -1,4 +1,5 @@
 import graphene
+from graphql import GraphQLError
 from graphene_django import DjangoObjectType
 
 from graphql_tutorial.users.schema import UserType
@@ -61,11 +62,11 @@ class CreateVote(graphene.Mutation):
   def mutate(self, info, link_id):
     user = info.context.user
     if user.is_anonymous:
-      raise Exception('You must be logged to vote!')
+      raise GraphQLError('Yout must be logged to vote!')
 
     link = Link.objects.filter(id=link_id).first()
-    if not Link:
-      raise Exception('Invalid Link!')
+    if not link:
+      raise GraphQLError('Invalid Link!')
 
     Vote.objects.create(
       user=user,
