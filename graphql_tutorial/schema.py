@@ -2,9 +2,14 @@ import graphene
 import graphql_jwt
 
 import links.schema
+import links.schema_relay
 from .users.schema import UserQuery, UserMutaion
 
-class Query(UserQuery, links.schema.Query, graphene.ObjectType):
+class Query(
+  UserQuery,
+  links.schema.Query,
+  links.schema_relay.RelayQuery,
+  graphene.ObjectType):
   pass
 
 class Mutation(UserMutaion, links.schema.Mutation, graphene.ObjectType):
