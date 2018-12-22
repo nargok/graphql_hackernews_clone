@@ -1,5 +1,6 @@
 import graphene
 import django_filters
+from graphql import GraphQLError
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 
@@ -22,4 +23,29 @@ class VoteNode(DjangoObjectType):
 
 class RelayQuery(graphene.ObjectType):
   relay_link = graphene.relay.Node.Field(LinkNode)
-  relay_link = DjangoFilterConnectionField(LinkNode, filterset_class=LinkFilter)
+  relay_links = DjangoFilterConnectionField(LinkNode, filterset_class=LinkFilter)
+
+class RelayCreateLink(graphene.relay.ClientIDMutation):
+  link = graphene.Field(LinkNode)
+
+  class Input:
+    url = graphene.String()
+    description = graphene.String()
+
+  def mutate_and_get_payload(self, info, **input):
+    user = info.context.user or None
+
+    if user.is_anonymous:
+      raise GraphQLError('You must be logged to create Link!')
+
+    link = Link(
+      url=input.get('url'),
+      description=input.get('description'),
+      posted_by=user,
+    )
+    link.save()
+
+    return RelayCreateLink(link=link)
+
+class RelayMutation(graphene.AbstractType):
+  relay_create_link = RelayCreateLink.Field()
